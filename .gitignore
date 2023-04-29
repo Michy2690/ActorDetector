@@ -7,6 +7,7 @@ __pycache__/
 *.so
 
 models
+Weights_trained
 
 # Distribution / packaging
 .Python

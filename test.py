@@ -1,3 +1,8 @@
+"""
+Load the trained network, extract each frame from a video, perform face detection with yoloface
+pass each face detected to the network and draw a rectangle around the face with the prediction of the actor,
+in the end reconstruct the video.
+"""
 import torch
 import cv2
 import torch.nn.functional as F

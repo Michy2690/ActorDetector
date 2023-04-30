@@ -20,7 +20,6 @@ if __name__ == '__main__':
     # Set up a parser for command line arguments
     parser = argparse.ArgumentParser("VGGFace demo script")
     parser.add_argument('--img', type=str, default='data/depp.jpg', help='input image file')
-    # TODO: add CUDA acceleration
     parser.add_argument('--cuda', dest='cuda', action='store_true', help='use CUDA acceleration')
     parser.add_argument('--no-cuda', dest='cuda', action='store_false', help='do NOT use CUDA acceleration')
     parser.set_defaults(cuda=True)

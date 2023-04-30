@@ -8,7 +8,7 @@ __pycache__/
 
 models
 Weights_trained
-
+.DS_Store
 # Distribution / packaging
 .Python
 build/

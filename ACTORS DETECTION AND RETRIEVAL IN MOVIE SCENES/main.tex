@@ -1,6 +1,7 @@
 \documentclass{article}
 \usepackage{graphicx} % Required for inserting images
 \usepackage{multicol}
+\usepackage{hyperref}
 \graphicspath{{images/}} % configuring the graphicx package
 \title{ACTORS DETECTION AND RETRIEVAL IN MOVIE SCENES}
 \author{Bianco Michael, Bertolini Matteo, Todaro Marco}
@@ -41,5 +42,53 @@ detection, in particular for face detection.
   \item Given a frame and the bounding box of the face, classify the correct names for the actor in the scene.
   \item Retrieval: provide additional photos and information about the actors founded.
 \end{itemize}
+
+\section{Description}
+In order to build the dataset, we take original images organized in directories named with the name of the actor,
+extract the first 12 images, resize them to (224,224) and assign each of them to the TRAIN set.
+The same is done for the other 8 images, assigned to the TEST set.
+\\\\
+Starting from the weights for VggFace available at \href{https://www.robots.ox.ac.uk/}{https://www.robots.ox.ac.uk/}, 
+we rewrote the VGG FACE network pre-trained with LFW dataset.
+\\\\
+The last layer has been modified to 16 output parameters in order to classify with the actors in our dataset
+Then we performed a fine-tuning of the last two layers FC and saved final weights.
+\\
+To integrate our model with the face-detection algorithm we laoded the trained network in a script, then extracted each frame from a video
+and performed face detection with yoloface.
+For each face detected, forwarded it to the network and draw a rectangle around the face with the prediction of the actor name,
+in the end reconstruct the video.
+\section{Labels}
+Anne Hathaway,
+Anthony Hopkins,
+Brad Pitt,
+Claire Forlani,
+Demi Moore,
+Denzel Washington,
+Johnny Depp,
+Kate Winslet,
+Leonardo DiCaprio,
+Margot Robbie,
+Matt Damon,
+Matthew McConaughey,
+Morgan Freeman,
+Robert DowneyJR,
+Scarlett Johansson,
+Tom Cruise
+
+\section{Demo}
+\includegraphics[scale=0.2]{images/demo1.png}  \\
+\includegraphics[scale=0.2]{images/demo2.png}\\  
+\includegraphics[scale=0.2]{images/demo3.png}  \\
+\includegraphics[scale=0.2]{images/demo4.png}\\  
+\includegraphics[scale=0.2]{images/demo5.png}  \\
+
+\begin{center}
+\begin{multicols}{3}
+\includegraphics[scale=0.5]{images/Anhony_Hopkins.jpg}
+\includegraphics[scale=0.42]{images/Brad_Pitt.jpg}
+\includegraphics[scale=0.25]{images/Kate_Winslet.jpg}
+\end{multicols}
+\end{center}    
 
 \end{document}

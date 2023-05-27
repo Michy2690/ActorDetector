@@ -34,8 +34,10 @@ def convert(torch_weights_file, model):
     block = 1
     block_size = [2, 2, 3, 3, 3]
     c = 1
-    var = torch.ones((16, 4096))
-    var_bias = torch.ones((16,))
+    names = [line.rstrip('\n') for line in open('data/names.txt')]
+    classes = len(names)
+    var = torch.ones((classes, 4096))
+    var_bias = torch.ones((classes,))
     for i, layer in enumerate(torch_model.modules):
         if layer.weight is not None:
             if block <= 5:

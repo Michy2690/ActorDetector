@@ -20,6 +20,7 @@ if __name__ == '__main__':
     # Set up a parser for command line arguments
     parser = argparse.ArgumentParser("VGGFace demo script")
     parser.add_argument('--img', type=str, default='data/depp.jpg', help='input image file')
+    # TODO: add CUDA acceleration
     parser.add_argument('--cuda', dest='cuda', action='store_true', help='use CUDA acceleration')
     parser.add_argument('--no-cuda', dest='cuda', action='store_false', help='do NOT use CUDA acceleration')
     parser.set_defaults(cuda=True)
@@ -34,6 +35,7 @@ if __name__ == '__main__':
     # Build VGGFace model and load pre-trained weights
     model = VGGFace().double()
     model_dict = torch.load('models/vggface.pth', map_location=lambda storage, loc: storage)
+    #model_dict = torch.load('Weights_trained/vggface_trained.pth', map_location=lambda storage, loc: storage)
     model.load_state_dict(model_dict)
 
     #TRAIN ADDING NEW DATA
@@ -44,20 +46,21 @@ if __name__ == '__main__':
         transforms.Normalize(mean=mean, std=std) # your transforms here
     ])
 
-    DATASET_PATH = "./Dataset"
+    DATASET_PATH = "../Dataset"
     actors = os.listdir(DATASET_PATH+'/TRAIN')
 
     classes = {i: actor for i, actor in enumerate(actors)}
     #print(classes)
 
     train_set = torchvision.datasets.ImageFolder(DATASET_PATH+'/TRAIN', transform=transform)
-    train_loader = torch.utils.data.DataLoader(train_set, batch_size=16)#, shuffle=True)
+    train_loader = torch.utils.data.DataLoader(train_set, batch_size=32)#, shuffle=True)
 
     test_set = torchvision.datasets.ImageFolder(DATASET_PATH+'/TEST', transform=transform)
-    test_loader = torch.utils.data.DataLoader(test_set, batch_size=16)#, shuffle=True)
+    test_loader = torch.utils.data.DataLoader(test_set, batch_size=32)#, shuffle=True)
 
-    epochs = 8
+    epochs = 3
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print("device:",device)
     model = model.to(device)
     layers_before = []
     layers_new = []
@@ -65,14 +68,14 @@ if __name__ == '__main__':
     i=1
     for layer in model.children():
         for param in layer.parameters():
-            if i > 28:
+            if i > 26:
                 layers_new.append(param)
             else:
                 layers_before.append(param)
             i+=1
 
     #opt_old = optim.SGD(layers_before, lr=0.001)
-    opt = optim.SGD(layers_new, lr=0.005)#, momentum=0.9)
+    opt = optim.SGD(layers_new, lr=0.012)#, momentum=0.8)
     crit = torch.nn.CrossEntropyLoss().to(device) # loss criterion
 
     for e in range(epochs):
@@ -155,3 +158,16 @@ if __name__ == '__main__':
     predictions = F.softmax(model(img), dim=1)
     score, index = predictions.max(-1)
     print("Predicted id: {} (probability: {})".format(names[index], score.item()))
+
+#-------------------------------------------------------
+    # Load test image and resize to 224x224
+    img = cv2.imread("data/vindiesel.jpg")
+    img = cv2.resize(img, (224, 224))
+
+    # Forward test image through VGGFace
+    img = torch.Tensor(img).permute(2, 0, 1).view(1, 3, 224, 224).double().to(device)
+    img -= torch.Tensor(np.array([129.1863, 104.7624, 93.5940])).double().view(1, 3, 1, 1).to(device)
+    predictions = F.softmax(model(img), dim=1)
+    score, index = predictions.max(-1)
+    print("Predicted id: {} (probability: {})".format(names[index], score.item()))
+

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<div style="display: flex; flex-direction: column;width: 100%; justify-content: center;align-items: center;">
+  <h1>Actor Detector - Live Demo</h1>
+  <button onclick="extractFrame()">Extract Frame</button>
+  <h2>Pause the video or click the button above when you want to classify</h2>
+  <video id="myVideo" width="800" controls>
+    <source src="../data/Vi presento Joe Black.mp4" type="video/mp4">
+    <source src="../data/Vi presento Joe Black.mp4" type="video/ogg">
+    Your browser does not support HTML video.
+  </video>
+  </br>
+  <canvas id="canvas"></canvas>
+</div>
+
+
+
+
+
+
+<ol id="olFrames"></ol>
+
+<script type="text/JavaScript">
+  var video = document.getElementById('myVideo');
+
+  video.addEventListener('pause', function() {
+    // Code to be executed when the video is paused
+    console.log('Video paused');
+    extractFrame();
+  });
+ function extractFrame() {
+  var video = document.getElementById('myVideo');
+  var canvas = document.getElementById('canvas');
+  var context = canvas.getContext('2d');
+  
+  // Pause the video
+  video.pause();
+  
+  // Set the canvas dimensions to match the video
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  
+  // Draw the current frame onto the canvas
+  context.drawImage(video, 0, 0, canvas.width, canvas.height);
+  
+  // Get the image data from the canvas as a data URL
+  var dataURL = canvas.toDataURL();
+  
+  // Display the image
+  var img = new Image();
+  img.src = dataURL;
+  document.body.write(img);
+}
+
+</script>
+
+
+</body>
+</html>

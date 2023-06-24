@@ -73,6 +73,8 @@ def classify():
 
     img, box, conf = face.face_detection(frame_arr=frame, model="tiny")
     print(img.shape)
+    if len(box) == 0:
+        return {"msg": "No face detected"}, 400
     # SOVRAPPONGO LE DETECTION ALL'IMMAGINE
     for x, y, w, h in box:
         if x < 0:

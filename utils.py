@@ -11,7 +11,7 @@ plt.ion()
 
 #RITORNA LA SINGOLA IMMAGINE SIMILE, DEVI POI USARE L'INDICE ACTOR DENTRO AL FILE actors_list.txt PER TROVARE IL NOME DELL'ATTORE
 def get_image(actor, row):
-    TRAIN_PATH = '../archive/Dataset_ridotto/'
+    TRAIN_PATH = '../archive/Dataset_nuovo/'
 
     actors = os.listdir(TRAIN_PATH)
     actors.sort()
@@ -104,8 +104,8 @@ def show_nearest_neighbor(X_train: np.array, Y_train: np.ndarray,
 
         X_cur, Y_cur = X_test[test_idx], Y_test[test_idx]
 
-        actor = int(nearest_neighbors[test_idx]/5)	#PER PRENDERE INDICE NOME ATTORE E IMMAGINE SIMILE!!!!
-        row = nearest_neighbors[test_idx] - actor * 5
+        actor = int(nearest_neighbors[test_idx]/20)	#PER PRENDERE INDICE NOME ATTORE E IMMAGINE SIMILE!!!!
+        row = nearest_neighbors[test_idx] - actor * 20
         
         X = get_image(actor, row)
         X_cur_pred, Y_cur_pred = X, Y_train[nearest_neighbors[test_idx]]
@@ -123,8 +123,9 @@ def show_nearest_neighbor(X_train: np.array, Y_train: np.ndarray,
 
 class NearestNeighbor:
 
-    def __init__(self):
+    def __init__(self, n_neighbors=8):
         self._X_db, self._Y_db = None, None
+        self._num_neighbors = n_neighbors
 
     def fit(self, X: np.ndarray, y: np.ndarray,):
         """
@@ -138,38 +139,45 @@ class NearestNeighbor:
         Finds the 1-neighbor of a point. Returns predictions as well as indices of
         the neighbors of each point.
         """
-        num_test_samples = X.shape[0]
+        
+        n_neighbors = self._num_neighbors
 
         # predict test faces
-        predictions = np.zeros((num_test_samples,))
-        nearest_neighbors = np.zeros((num_test_samples,), dtype=np.int32)
+        predictions = np.zeros((1,))
+        
+        distances = np.sum(np.square(self._X_db - X), axis=1)
+        #print(distances)
 
-        for i in range(num_test_samples):
-            """
-            distances = np.sum(np.square(self._X_db - X[i]), axis=1)
+        sorted_indexes = distances.argsort()
+        #print(sorted_indexes)
+        #print(distances[sorted_indexes])
 
-            # nearest neighbor classification
-            nearest_neighbor = np.argmin(distances)
-            nearest_neighbors[i] = nearest_neighbor
-            predictions[i] = self._Y_db[nearest_neighbor]
-            """
-            distances = np.sum(np.square(self._X_db - X[i]), axis=1)
-            #print(distances)
+        # nearest neighbor classification
+        #nearest_neighbor = np.argmin(distances)
+        nearest_neighbors = sorted_indexes[:n_neighbors]		#PER LA MEDIANA!!!!
+        #print(nearest_neighbor)
 
-            sorted_indexes = distances.argsort()
-            #print(sorted_indexes)
-            #print(distances[sorted_indexes])
-
-            # nearest neighbor classification
-            #nearest_neighbor = np.argmin(distances)
-            nearest_neighbor = sorted_indexes[:3]		#PER LA MEDIANA!!!!
-            #print(nearest_neighbor)
+        pred = {}
+        for i in range(n_neighbors):
+            nearest_neighbors[i] = self._Y_db[nearest_neighbors[i]]
             
-            median = int(np.median(nearest_neighbor))
-            #print(median)
+            if nearest_neighbors[i] not in pred.keys():
+                pred[nearest_neighbors[i]] = 1
+            else:
+                pred[nearest_neighbors[i]] += 1
+        
+        max_votes = max(pred.values())
+        max_voted = 0
+        for i in range(n_neighbors):
+            if pred[nearest_neighbors[i]] == max_votes:
+                max_voted = nearest_neighbors[i]
+                break
 
-            nearest_neighbors[i] = median
-            predictions[i] = self._Y_db[median]
-            
+
+        #median = int(np.median(nearest_neighbors))
+        #print(median)
+
+        #predictions = self._Y_db[max_voted]
+        predictions = max_voted
 
         return predictions, nearest_neighbors

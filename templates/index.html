@@ -9,37 +9,50 @@
         justify-content: center;
         align-items: center;
       ">
-    <h1>Actor Detector - Live Demo</h1>
+    <h1>Actor Detector CVCS - Live Demo</h1>
     <button onclick="extractFrame()">Extract Frame</button>
     <h2>
       Pause the video or click the button above when you want to classify
     </h2>
-    <video id="myVideo" width="800" controls>
-      <source src="static/Vi presento Joe Black.mp4" type="video/mp4" />
+    <input type="file" id="videoInput" accept="video/*">
+    <video id="myVideo" width="1000" controls>
+      <source src="static/video/GOT.mp4" type="video/mp4" />
       Your browser does not support HTML video.
     </video>
-    <br />
     <h3 style="color: red;" id="error"></h3>
-    </br>
+    <h3 style="color: blue;" id="loading"></h3>
     <div style="
     display: flex;
     flex-direction: row;
     width: 100%;
     justify-content: space-evenly;
     align-items: center;
-  "> <canvas id="canvas"></canvas>
-      <img id="canvasClassify"></img>
+  "> <canvas hidden="true" id="canvas"></canvas>
+      <div id="inference" hidden="true">
+        <h3 style="text-align: center;"> prediction: </h3>
+        <img width="1000" id="canvasClassify"></img>
+      </div>
     </div>
   </div>
   <script type="text/JavaScript">
+        const videoInput = document.getElementById('videoInput');
         var video = document.getElementById('myVideo');
-
+        videoInput.addEventListener('change', function() {
+          let file = this.files[0];
+          if(!file) 
+            file = "static/video/GOT.mp4";
+          const videoURL = URL.createObjectURL(file);
+          video.src = videoURL;
+        });
         video.addEventListener('pause', function() {
           // Code to be executed when the video is paused
           console.log('Video paused');
           extractFrame();
         });
        function extractFrame() {
+        document.getElementById("loading").innerHTML = "loading...";
+        document.getElementById("error").innerHTML = "";
+        document.getElementById("inference").hidden = true;
         // var video = document.getElementById('myVideo');
         var canvas = document.getElementById('canvas');
         var context = canvas.getContext('2d');
@@ -96,8 +109,9 @@
                                   // create an image
                 var outputImg = document.getElementById('canvasClassify');
                 outputImg.src = response["image"];
+                document.getElementById("inference").hidden = false;
                 }
-
+                document.getElementById("loading").innerHTML = "";
               
 
             

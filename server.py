@@ -35,7 +35,7 @@ model_dict = torch.load(
 model.load_state_dict(model_dict)
 print("CARICATO WEIGHTS")
 x_train = torch.load("data_20_6.txt")
-dataset = pd.read_csv("dataset.csv")
+dataset = pd.read_csv("dataset.csv").sort_values(by=["CLASS_NAME", "IMG_NAME"])
 x_train = x_train.detach().numpy()  # x_train.cpu().detach().numpy()
 print(x_train.shape)
 print("CARICATO VETTORI TRAINING")
@@ -59,7 +59,7 @@ print("FIT PCA COMPLETATO")
 # tsne_train = tsne.fit_transform(proj_train)
 # print("FIT TSNE COMPLETATO")
 
-nn = NearestNeighbor(8)
+nn = NearestNeighbor(5)
 # nn = KNeighborsClassifier(n_neighbors=7, weights='distance')
 nn.fit(x_train, y_train)
 
@@ -116,8 +116,14 @@ def classify():
         if y < 0:
             y = 0
 
+        small = False
         actor = frame[y : y + h + margin_r, x - margin_c : x + w - margin_c]
         print("dim. attore: ", actor.shape)
+        if actor.shape[0] < 224 or actor.shape[1] < 224:
+            actor = frame[y : y + h + margin_r, x : x + w]
+            small = True
+            print("small, dim. attore: ", actor.shape)
+        
         # PROCESSING
         actor = cv2.resize(actor, (224, 224))
         norm = transforms.Normalize((0.5,), (0.5,))
@@ -167,9 +173,10 @@ def classify():
         if sure < 0.1:
             color = (0, 0, 255)
 
-        cv2.rectangle(
-            frame, (x - margin_c, y), (x + w - margin_c, y + h + margin_r), color, 4
-        )
+        if small == True:
+            cv2.rectangle(frame, (x, y), (x + w, y + h + margin_r), color, 4)
+        else:
+            cv2.rectangle(frame, (x - margin_c, y), (x + w - margin_c, y + h + margin_r), color, 4)
         cv2.putText(
             frame,
             nome,

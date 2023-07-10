@@ -7,6 +7,7 @@ import torch
 from torchvision import transforms
 import cv2
 import random
+import scipy
 
 plt.ion()
 
@@ -157,8 +158,16 @@ class NearestNeighbor:
         # predict test faces
         predictions = np.zeros((1,))
 
-        distances = np.sum(np.square(self._X_db - X), axis=1)
-        # print(distances)
+        """
+        distances = []
+        for i in range(self._X_db.shape[0]):
+            distances.append(scipy.spatial.distance.cosine(self._X_db[i], X[0]))
+        #print(distances)
+        print(len(distances))
+        #distances = np.asarray(distances, dtype=np.float32)
+        """
+        distances = np.linalg.norm(self._X_db - X, axis=1)
+        #print(len(distances))
 
         sorted_indexes = distances.argsort()
         # print(sorted_indexes)
@@ -177,7 +186,7 @@ class NearestNeighbor:
                 pred[nearest_neighbors[i]] = 1
             else:
                 pred[nearest_neighbors[i]] += 1
-
+        print(nearest_neighbors)
         max_votes = max(pred.values())
         max_voted = 0
         for i in range(n_neighbors):

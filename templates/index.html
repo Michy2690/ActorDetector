@@ -1,6 +1,35 @@
 <!DOCTYPE html>
 <html>
 
+<head>
+  <title>Actor Detector CVCS - Live Demo</title>
+  <style>
+    .image-container {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      margin: 10px;
+    }
+
+    .image-description {
+      margin-left: 10px;
+      font-size: 15px;
+    }
+
+    .actor {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .image {
+      width: 224px;
+      height: 224px;
+    }
+  </style>
+
+</head>
+
 <body>
   <div style="
         display: flex;
@@ -29,99 +58,127 @@
     align-items: center;
   "> <canvas hidden="true" id="canvas"></canvas>
       <div id="inference" hidden="true">
-        <h3 style="text-align: center;"> prediction: </h3>
+        <h2 style="text-align: center;"> prediction: </h2>
         <img width="1000" id="canvasClassify"></img>
+        <br>
+        <h2 style="text-align: center;"> Nearest Neighbors: </h2>
+        <div id="neighbors"> </div>
       </div>
     </div>
   </div>
+  </div>
   <script type="text/JavaScript">
-        const videoInput = document.getElementById('videoInput');
-        var video = document.getElementById('myVideo');
-        videoInput.addEventListener('change', function() {
-          let file = this.files[0];
-          if(!file) 
-            file = "static/video/GOT.mp4";
-          const videoURL = URL.createObjectURL(file);
-          video.src = videoURL;
-        });
-        video.addEventListener('pause', function() {
-          // Code to be executed when the video is paused
-          console.log('Video paused');
-          extractFrame();
-        });
-       function extractFrame() {
-        document.getElementById("loading").innerHTML = "loading...";
-        document.getElementById("error").innerHTML = "";
-        document.getElementById("inference").hidden = true;
-        // var video = document.getElementById('myVideo');
-        var canvas = document.getElementById('canvas');
-        var context = canvas.getContext('2d');
+    const videoInput = document.getElementById('videoInput');
+    var video = document.getElementById('myVideo');
+    videoInput.addEventListener('change', function() {
+      let file = this.files[0];
+      if(!file) 
+        file = "static/video/GOT.mp4";
+      const videoURL = URL.createObjectURL(file);
+      video.src = videoURL;
+    });
+    video.addEventListener('pause', function() {
+      // Code to be executed when the video is paused
+      console.log('Video paused');
+      extractFrame();
+    });
+   function extractFrame() {
+    document.getElementById("loading").innerHTML = "loading...";
+    document.getElementById("error").innerHTML = "";
+    document.getElementById("inference").hidden = true;
+    // var video = document.getElementById('myVideo');
+    var canvas = document.getElementById('canvas');
+    var context = canvas.getContext('2d');
 
-        // Pause the video
-        video.pause();
+    // Pause the video
+    video.pause();
 
-        // Set the canvas dimensions to match the video
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
+    // Set the canvas dimensions to match the video
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
 
-        // Draw the current frame onto the canvas
-        context.drawImage(video, 0, 0, canvas.width, canvas.height);  
-        
-        // Get the image data from the canvas as a data URL
-        //var dataURL = canvas.toDataURL();//base64
+    // Draw the current frame onto the canvas
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);  
+    
+    // Get the image data from the canvas as a data URL
+    //var dataURL = canvas.toDataURL();//base64
 
-        // // Display the image
-        // var img = new Image();
-        // img.src = dataURL;
-        // document.body.write(img);
-        classify(canvas);
-      }
+    // // Display the image
+    // var img = new Image();
+    // img.src = dataURL;
+    // document.body.write(img);
+    classify(canvas);
+  }
 
-      function classify (img) {
-        w = img.width;
-        h = img.height;
-        canvas.toBlob(function(blob) {
-          imageBlob = blob;
+  function classify (img) {
+    w = img.width;
+    h = img.height;
+    canvas.toBlob(function(blob) {
+      imageBlob = blob;
 
-          var formData = new FormData();
-          formData.append('image', imageBlob, 'image.jpg');
-          fetch('/classify', {
-            method: 'POST',
-            body: formData
-          })
-          .then(response => response.json())
-          .then(response => {
-              //console.log('Image uploaded successfully',response.blob());
-              // var canvas = document.getElementById('canvasClassify');
-              // var context = canvas.getContext('2d');              
-              // // Draw the current frame onto the canvas
-              // // context.drawImage(video, 0, 0, canvas.width, canvas.height);
-              // context.drawImage(response.body, 0, 0, w, h);
-              console.log(response);
+      var formData = new FormData();
+      formData.append('image', imageBlob, 'image.jpg');
+      fetch('/classify', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(response => {
+          //console.log('Image uploaded successfully',response.blob());
+          // var canvas = document.getElementById('canvasClassify');
+          // var context = canvas.getContext('2d');              
+          // // Draw the current frame onto the canvas
+          // // context.drawImage(video, 0, 0, canvas.width, canvas.height);
+          // context.drawImage(response.body, 0, 0, w, h);
+          console.log(response);
 
 
 
-                if (response["msg"]){
-                  document.getElementById("error").innerHTML = response["msg"];
+            if (response["msg"]){
+              document.getElementById("error").innerHTML = response["msg"];
 
-                }else{
-                  document.getElementById("error").innerHTML = "";
-                                  // create an image
-                var outputImg = document.getElementById('canvasClassify');
-                outputImg.src = response["image"];
-                document.getElementById("inference").hidden = false;
-                }
-                document.getElementById("loading").innerHTML = "";
-              
-
+            }else{
+              document.getElementById("error").innerHTML = "";
+                              // create an image
+            var outputImg = document.getElementById('canvasClassify');
+            outputImg.src = response["image"];
+            const actors = [];
             
-          })
-          .catch(error => {
-            console.error('Error:', error);
-          });
-        }, 'image/jpeg', 1.0);
-      }
-    </script>
+            for (let i = 0; i < response["nearest_neighbors"].length; i++) {
+                let actor = response["nearest_neighbors"][i]["actor"];
+                let neighbors = response["nearest_neighbors"][i]["neighbors"];
+                console.log(neighbors);
+                let obj = { "actor": actor, "neighbors": neighbors};
+                actors.push(obj);
+            }
+
+            const container = document.getElementById('neighbors');
+            container.innerHTML = "";
+            for(let i = 0; i < actors.length; i++){
+                let actor = actors[i]["actor"];
+                let neighbors = actors[i]["neighbors"];
+                let div = document.createElement('div');
+                div.className = 'image-container';
+                div.innerHTML = `<div class="actor">${actor}</div>`;
+                container.appendChild(div);
+                for (let j = 0; j < neighbors.length; j++) {
+                    //generate a div for each image with description and image one after the other
+                    const div = document.createElement('div');
+                    div.className = 'image-container';
+                    div.innerHTML = `<img src="${neighbors[j].IMG_NAME}" class="image" /><div class="image-description">${neighbors[j].CLASS_NAME}</div>`;
+                    container.appendChild(div);
+                }
+            }
+            document.getElementById("inference").hidden = false;
+            }
+            document.getElementById("loading").innerHTML = "";
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    }, 'image/jpeg', 1.0);
+  }
+</script>
 </body>
 
 </html>

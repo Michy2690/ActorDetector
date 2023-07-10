@@ -53,7 +53,7 @@ print("CARICATO LABEL TRAINING")
 
 n_comp = 1024
 pca = PCA(n_comp)
-# proj_train = pca.fit_transform(x_train)
+proj_train = pca.fit_transform(x_train)
 print("FIT PCA COMPLETATO")
 # tsne = TSNE(2)
 # tsne_train = tsne.fit_transform(proj_train)
@@ -61,7 +61,7 @@ print("FIT PCA COMPLETATO")
 
 nn = NearestNeighbor(5)
 # nn = KNeighborsClassifier(n_neighbors=7, weights='distance')
-nn.fit(x_train, y_train)
+nn.fit(proj_train, y_train)
 
 
 @app.route("/")
@@ -148,7 +148,7 @@ def classify():
         _, actor = model(actor)
         actor = actor.detach().numpy()
         print("actor:", actor.shape)
-        # actor = pca.transform(actor)
+        actor = pca.transform(actor)
         # actor = actor[:, 2]
 
         predictions, nearest_neighbors, nearest_neighbors_indexes = nn.predict(actor)

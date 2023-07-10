@@ -158,15 +158,15 @@ class NearestNeighbor:
         # predict test faces
         predictions = np.zeros((1,))
 
-        """
+        
         distances = []
         for i in range(self._X_db.shape[0]):
             distances.append(scipy.spatial.distance.cosine(self._X_db[i], X[0]))
         #print(distances)
         print(len(distances))
-        #distances = np.asarray(distances, dtype=np.float32)
-        """
-        distances = np.linalg.norm(self._X_db - X, axis=1)
+        distances = np.asarray(distances, dtype=np.float32)
+        
+        #distances = np.linalg.norm(self._X_db - X, axis=1)
         #print(len(distances))
 
         sorted_indexes = distances.argsort()

@@ -3,10 +3,7 @@ from typing import Tuple
 import os
 from PIL import Image
 import matplotlib.pyplot as plt
-import torch
 from torchvision import transforms
-import cv2
-import random
 import scipy
 
 plt.ion()
@@ -29,7 +26,6 @@ def get_image(actor, row):
 
     return img_flat
 
-
 def get_w_h(n: int, max_ratio: int = 2):
     values, rests = [], []
     r = int(np.sqrt(n))
@@ -39,7 +35,6 @@ def get_w_h(n: int, max_ratio: int = 2):
         rests.append(n % i)
         values.append(n // i)
     return r - np.argmin(rests), values[np.argmin(rests)]
-
 
 def show_eigenfaces(eigenfaces: np.ndarray, size: Tuple, max_components: int = 25):
     """
@@ -72,27 +67,6 @@ def show_eigenfaces(eigenfaces: np.ndarray, size: Tuple, max_components: int = 2
             ax[i, j].set_aspect("equal")
 
     plt.subplots_adjust(wspace=0.05, hspace=0.4)
-
-
-def show_3d_faces_with_class(points: np.ndarray, labels: np.ndarray):
-    """
-    Plots 3d data in colorful point (color is class).
-
-    Parameters
-    ----------
-    points: ndarray
-        3d points to plot (shape: (n_samples, 3)).
-    labels: ndarray
-        classes (shape: (n_samples,)).
-
-    Returns
-    -------
-    None
-    """
-    fig = plt.figure(figsize=(8, 8))
-    ax = fig.add_subplot(111, projection="3d")
-    ax.scatter(points[:, 0], points[:, 1], points[:, 2], alpha=0.5, c=labels, s=60)
-    plt.show(block=True)
 
 
 def show_nearest_neighbor(
@@ -149,8 +123,7 @@ class NearestNeighbor:
 
     def predict(self, X: np.ndarray):
         """
-        Finds the 1-neighbor of a point. Returns predictions as well as indices of
-        the neighbors of each point.
+        Trovo i 5 vicini più votati usando la cosine distance
         """
 
         n_neighbors = self._num_neighbors
@@ -162,20 +135,15 @@ class NearestNeighbor:
         distances = []
         for i in range(self._X_db.shape[0]):
             distances.append(scipy.spatial.distance.cosine(self._X_db[i], X[0]))
-        #print(distances)
-        print(len(distances))
+        
         distances = np.asarray(distances, dtype=np.float32)
         
         #distances = np.linalg.norm(self._X_db - X, axis=1)
         #print(len(distances))
 
         sorted_indexes = distances.argsort()
-        # print(sorted_indexes)
-        # print(distances[sorted_indexes])
-
-        # nearest neighbor classification
-        # nearest_neighbor = np.argmin(distances)
-        nearest_neighbors = sorted_indexes[:n_neighbors]  # PER LA MEDIANA!!!!
+        
+        nearest_neighbors = sorted_indexes[:n_neighbors]
         nearest_neighbors_indexes = nearest_neighbors.copy()
         print(nearest_neighbors_indexes)
         pred = {}
@@ -194,10 +162,6 @@ class NearestNeighbor:
                 max_voted = nearest_neighbors[i]
                 break
 
-        # median = int(np.median(nearest_neighbors))
-        # print(median)
-
-        # predictions = self._Y_db[max_voted]
         predictions = max_voted
 
         return predictions, nearest_neighbors, nearest_neighbors_indexes

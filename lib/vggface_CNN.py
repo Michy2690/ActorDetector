@@ -83,7 +83,7 @@ class VGGFaceCNN(nn.Module):
         # Forward through feature layers
         for k, layer in self.features.items():
             x = layer(x)
-        out_c = x
+        
         # Flatten convolution outputs
         x = x.view(x.size(0), -1)
 
@@ -92,4 +92,4 @@ class VGGFaceCNN(nn.Module):
             x = layer(x)
 
         # out layer cnn e fc
-        return out_c, x
+        return x

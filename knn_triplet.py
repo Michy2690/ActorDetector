@@ -18,10 +18,10 @@ plt.ion()
 def main():
     X_test, Y_test = get_data()
     
-    Y_train = torch.zeros((544*5, ))
+    Y_train = torch.zeros((544*10, ))
     actor_index = 0
     for i in range(544):
-        for c in range(5):
+        for c in range(10):
             Y_train[actor_index] = i
             actor_index += 1
 

@@ -1,4 +1,8 @@
 > Bianco Michael, Bertolini Matteo, Todaro Marco
+
+https://github.com/Michy2690/ActorDetector/assets/44223979/fe502ff3-f1c4-441f-ba0f-6fc450753f19
+
+
 # Abstract
 We present an approach to detect and recognize automatically
 the actors present in a movie scene. This method is in

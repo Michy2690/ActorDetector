@@ -1,6 +1,9 @@
 > Bianco Michael, Bertolini Matteo, Todaro Marco
 
-https://github.com/Michy2690/ActorDetector/assets/44223979/fe502ff3-f1c4-441f-ba0f-6fc450753f19
+
+
+https://github.com/Michy2690/ActorDetector/assets/44223979/c284982c-8a6b-415c-b826-0b155713beab
+
 
 
 # Abstract

@@ -21,8 +21,8 @@ which he/her acts.
 
 [[Paper]](ACTORS DETECTION AND RETRIEVAL IN MOVIE SCENES/Actor recognition through retrieval in movie scenes.pdf)
 
-<img src="ACTORS DETECTION AND RETRIEVAL IN MOVIE SCENES/images/results.jpg" style="zoom:60%;" />
-<img src="ACTORS DETECTION AND RETRIEVAL IN MOVIE SCENES/images/schema.png" style="zoom:60%;" />
+<img src="ACTORS DETECTION AND RETRIEVAL IN MOVIE SCENES/images/results.jpeg" style="zoom:60%;" />
+<img src="ACTORS DETECTION AND RETRIEVAL IN MOVIE SCENES/images/schema.jpeg" style="zoom:60%;" />
 
 # Implementation
 

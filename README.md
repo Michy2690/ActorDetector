@@ -19,7 +19,7 @@ better user experiences, for instance displaying other useful
 information on the actor detected or similar movies in
 which he/her acts.
 
-[[Paper]](ACTORS DETECTION AND RETRIEVAL IN MOVIE SCENES/Actor recognition through retrieval in movie scenes.pdf)
+[[Paper]](https://github.com/Michy2690/ActorDetector/blob/main/ACTORS%20DETECTION%20AND%20RETRIEVAL%20IN%20MOVIE%20SCENES/Actor%20recognition%20through%20retrieval%20in%20movie%20scenes.pdf)
 
 <img src="ACTORS DETECTION AND RETRIEVAL IN MOVIE SCENES/images/results.jpeg" style="zoom:60%;" />
 <img src="ACTORS DETECTION AND RETRIEVAL IN MOVIE SCENES/images/schema.jpeg" style="zoom:60%;" />
